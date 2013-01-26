@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Links in the cloud</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="/css/bootstrap-responsive.css" type="text/css" />
+  <link rel="stylesheet" href="/css/snapdragon.css" type="text/css" />
+  <link rel="shortcut icon" href="/img/favicon.ico">
+</head>
+<body>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="#">Snapdragon</a>
+				<div class="nav-collapse collapse">					
+					<p class="navbar-text pull-right">
+						<a href="/users/<%= @user.id %>" class="navbar-link"><%= @user.name %></a>						
+					</p>									
+					<ul class="nav">
+						<li class="<%= @home_active %>"><a href="/home/">Home</a></li>
+						<li class="<%= @bookmarks_active %>"><a href="/feeds/">Feeds</a></li>
+						<li class="<%= @pop_bookmarks_active %>"><a href="/bookmarks/">Bookmarks</a></li>
+					</ul>
+				</div><!--/.nav-collapse -->
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row-fluid">
+			<div class="span8">
+				<%= partial(:_flash) %>
+				<%= yield %>							  
+			</div><!--/span-->
+			<div class="span4">
+				<div class="well">
+					<h3>Pinned</h3>
+					<% if @pinned.count == 0 %>
+						You have no pinned bookmarks.
+					<% end %>
+					<table>	
+						<% @pinned.each do |pbm| %>
+							<tr><td><a href="<%= pbm.url %>"><%= pbm.name %></a></td></tr>							
+						<% end %>
+					</table>
+					<hr/>
+					<a href="/bookmarks/unpin" class="btn btn-inverse btn-small">Unpin Links</a>
+				</div>				
+			</div><!--/span-->
+		</div><!--/row-->
+
+		<hr>
+
+		<footer>
+			<ul id="footer">
+				<li><a href="/home/about/">About</a></li>
+				<li><a href="/home/contact/">Contact</a></li>
+				<li><a href="/home/tools/">Tools</a></li>				
+			</ul>
+		</footer>
+
+	</div><!--/.fluid-container-->
+	<script src="/js/jquery.js"></script>
+	<script src="/js/bootstrap.js"></script>
+	<script src="/js/snapdragon.js"></script>
+</body>
+</html>

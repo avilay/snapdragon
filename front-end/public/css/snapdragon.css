@@ -1,0 +1,58 @@
+body {
+    padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+.form-inline {
+	margin: 0;
+	font-size: small;
+}
+
+.item {
+    padding: 5px;
+    cursor: pointer;
+    font-family: "Merriweather";
+}
+
+.item h4 {
+    margin-bottom: 0;
+    font-weight: 300;
+    font-style: normal;
+    font-size-adjust: none;
+    color: #222222;
+}
+
+footer, 
+ul#footer {
+	padding: 0 0 2px;
+    position: relative;
+    margin: 0;  
+    background-color: #fff;
+    color: #999;
+    padding: 5px 0;
+    /*text-align: center;*/
+    line-height: normal;    
+    /*font-size: .9em;*/
+    border-radius: 0 0 4px 4px;
+    -webkit-border-radius: 0 0 4px 4px;
+    -moz-border-radius: 0 0 4px 4px;
+}
+
+ul#footer li {
+    display: inline;
+    list-style: none;
+}
+
+ul#footer li a {
+    padding: 5px 5px;
+    text-decoration: none;
+    color: #3E3E42;
+    border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    -moz-border-radius: 4px 4px 0 0;
+}
+
+ul#footer li a:hover {
+    color: #000;
+	text-decoration: underline;
+}

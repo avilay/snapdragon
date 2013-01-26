@@ -1,0 +1,10 @@
+Scenarios
+=========
+1. Avi is browsing some site on his iPhone and decides that it is worth bookmarking for future reference. He clicks on the "share" button in Safari and is able to save the link to snapdragon.
+2. Avi is browsing
+
+
+1. User is able to save a bookmark/feed from the browser using a bookmarklet.
+2. User is able to save a bookmark/feed from an iDevice or Android from the browser using <TODO>.
+3. User is able to see a list of bookmarks in snapdragon.
+4. User is able to see the list of feeds in snapdragon. For each feed he is able to see the items in that feed.

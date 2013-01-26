@@ -1,0 +1,10 @@
+<p class="text-success">
+  <% @flash[:notices].each do |notice| %>
+    <%= notice %><br/>
+  <% end %>
+</p>
+<p class="text-error">
+  <% @flash[:errors].each do |error| %>
+    <%= error %><br/>
+  <% end %>
+</p>

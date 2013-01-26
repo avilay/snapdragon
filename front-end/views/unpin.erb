@@ -1,0 +1,14 @@
+<h1>Unpin Links</h1>
+<form action="/bookmarks/unpin" method="post">		
+	<fieldset>
+		<legend>Select the links you want to unpin</legend>
+		<% @pinned.each do |pbm| %>
+		<label class="checkbox">
+			<input type="checkbox" name="<%= pbm.id %>"><a href="<%= pbm.url %>"><%= pbm.name %></a>
+		</label>
+		<% end %>
+	</fieldset>
+  	<div class="actions">
+  		<input type="submit", class="btn btn-inverse" value="Unpin selected" />    
+  	</div>
+</form>

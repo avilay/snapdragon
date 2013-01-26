@@ -1,0 +1,29 @@
+<h1>Details</h1>
+<fieldset>
+	<legend>Bookmark</legend>
+	<div style="margin-bottom: 10px;">
+		<label><strong>Url</strong></label>
+		<a href="<%= @bm.url %>"><%= @bm.url %></a>		
+	</div>
+	<div style="margin-bottom: 10px;">
+		<label><strong>Title</strong></label>
+		<%= @bm.title %>
+	</div>
+	<div style="margin-bottom: 10px;">
+		<label><strong>Name</strong></label>
+		<%= @bm.name %>
+	</div>
+	<div style="margin-bottom: 10px;">
+		<label><strong>Notes</strong></label>
+		<%= @bm.notes %>
+	</div>
+	<div style="margin-bottom: 10px;">
+		<label><strong>Added On</strong></label>    
+		<%= @bm.added_on %>
+	</div>	
+</fieldset>
+<p>
+	<a href="/bookmarks/<%= @bm.id %>/pin" class="btn btn-inverse">Pin</a>
+	<a href="/bookmarks/<%= @bm.id %>/edit" class="btn btn-warning">Edit</a>
+	<a href="/bookmarks/<%= @bm.id %>/delete" class="btn btn-danger">Delete</a>	
+</p>
