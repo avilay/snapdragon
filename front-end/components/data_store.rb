@@ -17,13 +17,14 @@ class DataStore
   end
 
   def parse_conn_str(conn_str)
-    matches = %r{(.*?)://(.*):(.*)@(.*)/(.*)}.match(conn_str)
+    matches = %r{(.*?)://(.*):(.*)@(.*):(.*)/(.*)}.match(conn_str)
     params = {}
     #params[:dbtype] = matches[1]
     params[:user] = matches[2].strip
     params[:password] = matches[3].strip
     params[:host] = matches[4].strip
-    params[:dbname] = matches[5].strip
+    params[:port] = matches[5].strip
+    params[:dbname] = matches[6].strip
     params
   end
 
