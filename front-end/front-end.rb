@@ -16,10 +16,12 @@ enable :sessions
 configure do
   set :app_id, '173989102700233'
   set :app_secret, '2abc94650d129c7887e25a04fb4c7737'
-  set :auth_done, 'http://localhost:4567/home/authdone'
+  #set :auth_done, 'http://localhost:5000/home/authdone'
+  set :auth_done, 'http://stormy-wave-7243.herokuapp.com/home/authdone'
   set :state, Digest::SHA2.hexdigest(rand.to_s)
   set :dbname, 'snapdragon'
   set :links_per_page, 10  
+  #set :server, 'webrick'
 end
 
 helpers do
@@ -60,13 +62,18 @@ before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do
 end
 
 get '/home/authdone' do
+  logger.info 'Inside /home/authdone'
   oclient = OAuth2Client.new(settings)  
+  oclient.logger = logger
   if user = oclient.authenticate(params)
+    logger.info 'user was authenticated'
     session[:user] = DataStore.new(dbname: settings.dbname).add_or_get_user(User.new(user))
     session[:authenticated] = true
-    next_page = session[:after_auth_call] || '/home/'    
-    status, headers, body = call! env.merge("PATH_INFO" => next_page)
-    [status, headers, body]
+    next_page = session[:after_auth_call] || '/home/'
+    logger.info "about to call #{next_page}"
+    #status, headers, body = call! env.merge("PATH_INFO" => next_page)
+    #[status, headers, body]
+    redirect to(next_page)
   end
 end
 

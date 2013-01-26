@@ -4,6 +4,7 @@ require 'open-uri'
 class OAuth2Client
   attr_reader :app_id, :app_secret, :auth_done, :state, :auth_grant
   attr_reader :login_url, :token_url, :user_url
+  attr_accessor :logger
 
   def initialize(settings)
     @app_id = settings.app_id
@@ -13,6 +14,10 @@ class OAuth2Client
     @login_url = "https://www.facebook.com/dialog/oauth?client_id=#{@app_id}&redirect_uri=#{@auth_done}&state=#{@state}"
     @token_url = "https://graph.facebook.com/oauth/access_token?client_id=#{@app_id}&redirect_uri=#{@auth_done}&client_secret=#{@app_secret}&code="
     @user_url = "https://graph.facebook.com/me?access_token="
+  end
+
+  def debug
+    logger.info 'Inside OAuth2Client debug'
   end
 
   def authenticate(params)
@@ -28,13 +33,13 @@ class OAuth2Client
 
   def get_access_token
     @token_url +=@auth_grant
-    response = URI.parse(URI.encode(@token_url)).read
+    response = URI.parse(URI.encode(@token_url)).read      
     token = {}
     response.split('&').each do |p|
       flds = p.split('=')
       token[flds[0].chomp] = flds[1].chomp
     end
-    token
+    token    
   end
 
   def get_user_details(token)
