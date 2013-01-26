@@ -61,6 +61,19 @@ before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do
   end  
 end
 
+get '/home/debug' do
+  if development?
+    env = 'dev'
+  elsif test?
+    env = 'test'
+  elsif production?
+    env = 'prod'
+  else
+    env = 'undefined'
+  end
+  env
+end
+
 get '/home/authdone' do
   logger.info 'Inside /home/authdone'
   oclient = OAuth2Client.new(settings)  
