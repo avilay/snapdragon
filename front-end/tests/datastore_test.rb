@@ -4,8 +4,8 @@ class DataStoreTest < Test::Unit::TestCase
   include DbCallsHelper
 
   def setup
-    @pg = PG.connect(dbname: 'snapdragon')
-    @ds = DataStore.new(dbname: 'snapdragon')
+    @pg = PG.connect(dbname: 'snapdragon')    
+    @ds = DataStore.new($conn_str)
   end
 
   # Ask for an existing user

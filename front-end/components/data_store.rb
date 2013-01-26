@@ -10,11 +10,21 @@ class DataStore
 
   attr_reader :user_id
 
-  def initialize(params)    
-    raise 'Cannot create datastore without dbname' unless dbname = params[:dbname]
-    @user_id = params[:user_id]
-    @logger = params[:logger]
-    @conn = PG.connect(dbname: dbname)
+  def initialize(conn_str) 
+    raise 'Cannot initialize DataStore with an empty connection string' unless conn_str    
+    params = parse_conn_str(conn_str)
+    @conn = PG.connect(params)
+  end
+
+  def parse_conn_str(conn_str)
+    matches = %r{(.*?)://(.*):(.*)@(.*)/(.*)}.match(conn_str)
+    params = {}
+    #params[:dbtype] = matches[1]
+    params[:user] = matches[2].strip
+    params[:password] = matches[3].strip
+    params[:host] = matches[4].strip
+    params[:dbname] = matches[5].strip
+    params
   end
 
   def add_or_get_user(proto)

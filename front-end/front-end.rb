@@ -14,14 +14,13 @@ require 'will_paginate-bootstrap'
 enable :sessions
 
 configure do
-  set :app_id, '173989102700233'
-  set :app_secret, '2abc94650d129c7887e25a04fb4c7737'
-  #set :auth_done, 'http://localhost:5000/home/authdone'
-  set :auth_done, 'http://stormy-wave-7243.herokuapp.com/home/authdone'
+  set :app_id, ENV['FB_APP_ID']
+  set :app_secret, ENV['FB_APP_SECRET']
+  set :host_name, ENV['HOSTNAME']
+  set :auth_done, "http://#{ENV['HOSTNAME']}/home/authdone"
+  set :conn_str, ENV['DATABASE_URL']
   set :state, Digest::SHA2.hexdigest(rand.to_s)
-  set :dbname, 'snapdragon'
-  set :links_per_page, 10  
-  #set :server, 'webrick'
+  set :links_per_page, 10    
 end
 
 helpers do
@@ -51,7 +50,8 @@ before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do
   if session[:authenticated]
     begin
       @user = session[:user]      
-      @bs = BookmarkStore.new(dbname: settings.dbname, user_id: @user.id, logger: logger)
+      @bs = BookmarkStore.new(settings.conn_str)
+      @bs.add_or_get_user(@user)
       @pinned = @bs.get_pinned_bookmarks
     rescue
       reset_session
@@ -62,16 +62,24 @@ before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do
 end
 
 get '/home/debug' do
+  @dvals = {}
   if development?
-    env = 'dev'
+    @dvals['env'] = 'dev'
   elsif test?
-    env = 'test'
+    @dvals['env'] = 'test'
   elsif production?
-    env = 'prod'
+    @dvals['env'] = 'prod'
   else
-    env = 'undefined'
+    @dvals['env'] = 'udefined'
   end
-  env
+  @dvals['app_id'] = settings.app_id
+  @dvals['app_secret'] = settings.app_secret
+  @dvals['auth_done'] = settings.auth_done
+  @dvals['dbname'] = settings.dbname
+  @dvals['dbuser'] = settings.dbuser
+  @dvals['dbpwd'] = settings.dbpwd
+
+  erb :'home/debug', :layout => :layout_home
 end
 
 get '/home/authdone' do
@@ -80,7 +88,7 @@ get '/home/authdone' do
   oclient.logger = logger
   if user = oclient.authenticate(params)
     logger.info 'user was authenticated'
-    session[:user] = DataStore.new(dbname: settings.dbname).add_or_get_user(User.new(user))
+    session[:user] = DataStore.new(settings.conn_str).add_or_get_user(User.new(user))
     session[:authenticated] = true
     next_page = session[:after_auth_call] || '/home/'
     logger.info "about to call #{next_page}"

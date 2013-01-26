@@ -5,13 +5,13 @@ class BookmarkStoreTest < Test::Unit::TestCase
 
   def setup
     @pg = PG.connect(dbname: 'snapdragon')
-    @bs = BookmarkStore.new(dbname: 'snapdragon')
+    @bs = BookmarkStore.new($conn_str)
     @bs.add_or_get_user(User.new('oauth_id' => '566213105', 'name' => 'Avilay Parekh'))
   end
 
   # Get bookmarks without setting a user in data store
   def test_get_bookmarks_nouser
-    ds = BookmarkStore.new(dbname: 'snapdragon')
+    ds = BookmarkStore.new($conn_str)
     assert_raises(RuntimeError) { ds.get_bookmarks }
   end
 
