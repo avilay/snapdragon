@@ -13,6 +13,7 @@ module SqlQueries
     FROM bookmarks b, links l 
     WHERE b.link_id = l.id 
     AND b.user_id = $1
+    ORDER BY b.added_on DESC
   EOS
 
   CHK_BM = <<-EOS

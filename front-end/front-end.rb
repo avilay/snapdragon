@@ -61,24 +61,8 @@ before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do
   end  
 end
 
-get '/home/debug' do
+get '/home/debug' do  
   @dvals = {}
-  if development?
-    @dvals['env'] = 'dev'
-  elsif test?
-    @dvals['env'] = 'test'
-  elsif production?
-    @dvals['env'] = 'prod'
-  else
-    @dvals['env'] = 'udefined'
-  end
-  @dvals['app_id'] = settings.app_id
-  @dvals['app_secret'] = settings.app_secret
-  @dvals['auth_done'] = settings.auth_done
-  @dvals['dbname'] = settings.dbname
-  @dvals['dbuser'] = settings.dbuser
-  @dvals['dbpwd'] = settings.dbpwd
-
   erb :'home/debug', :layout => :layout_home
 end
 
@@ -92,10 +76,13 @@ get '/home/authdone' do
     session[:authenticated] = true
     next_page = session[:after_auth_call] || '/home/'
     logger.info "about to call #{next_page}"
-    #status, headers, body = call! env.merge("PATH_INFO" => next_page)
-    #[status, headers, body]
     redirect to(next_page)
   end
+end
+
+# TODO: Find a good regex for both '/home/' and '/'
+get '/' do
+  redirect to('/home/')
 end
 
 get '/home/' do

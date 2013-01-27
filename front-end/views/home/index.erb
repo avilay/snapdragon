@@ -5,10 +5,14 @@
 </div>
 <div class="row-fluid">
 	<div class="span4">            	
-		<h3>Reduce news feeds overload</h3>
+		<h3>Multiple devices</h3>
 		<p>
-			Automatically filters news items across all your feeds based on your reading habits. Access individual feeds as well.
-		</p>              
+			Save bookmarks and feeds from any device using our browser buttons or simply emailing the link to us. Drag these buttons onto your browser. 
+			<div><a href="javascript:(function(){ url = &#39;http://<%= settings.host_name %>/bookmarks/next?url=&#39;+encodeURIComponent(window.location.href)+&#39;&amp;title=&#39;+encodeURIComponent(document.title); features = &#39;location=1,links=0,scrollbars=0,toolbar=0,width=550,height=620&#39;; window.open(url+&#39;&amp;popup=true&#39;, &#39;somename&#39;, features) })()" title="+B" class="btn btn-inverse">+B</a>
+
+			<a href="javascript:(function(){ url = &#39;http://localhost:4567/bookmarks/next?url=&#39;+encodeURIComponent(window.location.href)+&#39;&amp;title=&#39;+encodeURIComponent(document.title); features = &#39;location=1,links=0,scrollbars=0,toolbar=0,width=550,height=620&#39;; window.open(url+&#39;&amp;popup=true&#39;, &#39;somename&#39;, features) })()" title="+F" class="btn btn-inverse">+F</a></div>
+
+		</p>        
 	</div><!--/span-->
 	<div class="span4">
 		<h3>Automatic grouping</h3>
@@ -31,13 +35,10 @@
 		</p>
 	</div><!--/span-->
 	<div class="span4">
-		<h3>Multiple devices</h3>
+		<h3>Reduce news feeds overload</h3>
 		<p>
-			Save bookmarks and feeds from any device using our browser buttons or simply emailing the link to us. Drag these buttons onto your browser. 
-			<div><a href="javascript:(function(){ url = &#39;http://localhost:4567/bookmarks/next?url=&#39;+encodeURIComponent(window.location.href)+&#39;&amp;title=&#39;+encodeURIComponent(document.title); features = &#39;location=1,links=0,scrollbars=0,toolbar=0,width=550,height=620&#39;; window.open(url+&#39;&amp;popup=true&#39;, &#39;somename&#39;, features) })()" title="+B" class="btn btn-inverse">+B</a>
-			<a href="javascript:(function(){ url = &#39;http://localhost:4567/bookmarks/next?url=&#39;+encodeURIComponent(window.location.href)+&#39;&amp;title=&#39;+encodeURIComponent(document.title); features = &#39;location=1,links=0,scrollbars=0,toolbar=0,width=550,height=620&#39;; window.open(url+&#39;&amp;popup=true&#39;, &#39;somename&#39;, features) })()" title="+F" class="btn btn-inverse">+F</a></div>
-
-		</p>
+			Automatically filters news items across all your feeds based on your reading habits. Access individual feeds as well.
+		</p> 		
 	</div><!--/span-->
 	<div class="span4">
 		<h3>No social</h3>
