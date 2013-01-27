@@ -9,17 +9,18 @@ class DataStore
   include SqlQueries
 
   attr_reader :user_id
+  attr_accessor :logger
 
   def initialize(conn_str) 
     raise 'Cannot initialize DataStore with an empty connection string' unless conn_str    
+    self.logger = logger
     params = parse_conn_str(conn_str)
-    @conn = PG.connect(params)
+    @conn = PG.connect(params)    
   end
 
   def parse_conn_str(conn_str)
     matches = %r{(.*?)://(.*):(.*)@(.*):(.*)/(.*)}.match(conn_str)
     params = {}
-    #params[:dbtype] = matches[1]
     params[:user] = matches[2].strip
     params[:password] = matches[3].strip
     params[:host] = matches[4].strip

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS links (
 
 CREATE TABLE IF NOT EXISTS bookmarks (
 	id serial CONSTRAINT b_pri_key PRIMARY KEY,
-	name varchar(50),
+	name varchar(1024),
 	notes text,
 	added_on timestamp,
 	is_pinned boolean,

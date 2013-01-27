@@ -47,6 +47,7 @@ end
 # Only paths that do not start with home should have this filter apply
 before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do  
   set_flash
+  logger.level = Logger::WARN
   if session[:authenticated]
     begin
       @user = session[:user]      
@@ -62,7 +63,27 @@ before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do
 end
 
 get '/home/debug' do  
+  logger.fatal("Logging fatal event!!")
+  logger.error("Logging error!!")
+  logger.warn("Logging warning event!!")
+  logger.info("Logging info event!!")
+  logger.debug("Logging debug event!!")
   @dvals = {}
+  if logger.fatal?
+    @dvals['log-level-fatal'] = 'fatal'
+  end
+  if logger.error?
+    @dvals['log-level-error'] = 'error'
+  end
+  if logger.warn?
+    @dvals['log-level-warn'] = 'warn'
+  end
+  if logger.info?
+    @dvals['log-level-info'] = 'info'
+  end
+  if logger.debug?
+    @dvals['log-level-debug'] = 'debug'
+  end
   erb :'home/debug', :layout => :layout_home
 end
 

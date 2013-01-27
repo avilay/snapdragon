@@ -16,10 +16,6 @@ class OAuth2Client
     @user_url = "https://graph.facebook.com/me?access_token="
   end
 
-  def debug
-    logger.info 'Inside OAuth2Client debug'
-  end
-
   def authenticate(params)
     raise 'We seem to be a victim of CSRF' unless params[:state] == @state
     if @auth_grant = params[:code]

@@ -1,5 +1,8 @@
-$: << File.expand_path("/home/avilay/projects/snapdragon/front-end/components/")
-$: << File.expand_path("/home/avilay/projects/snapdragon/front-end/models/")
+#$: << File.expand_path("/home/avilay/projects/snapdragon/front-end/components/")
+#$: << File.expand_path("/home/avilay/projects/snapdragon/front-end/models/")
+$: << File.expand_path("#{ENV['SD_HOME']}/front-end/components/")
+$: << File.expand_path("#{ENV['SD_HOME']}/front-end/models/")
+
 require 'test/unit'
 require 'pg'
 require 'data_store'
