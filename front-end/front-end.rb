@@ -37,6 +37,7 @@ helpers do
   end
 
   def reset_session
+    logger.info("Resetting session to #{request.path_info}")
     session[:authenticated] = false
     session[:after_auth_call] = request.path_info
     redirect OAuth2Client.new(settings).login_url  
@@ -45,46 +46,26 @@ end
 
 # All paths starting with home should be excluded from being authenticated
 # Only paths that do not start with home should have this filter apply
-before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do  
+before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do
+  logger.error("This is error")
+  logger.info("This is info")
   set_flash
-  logger.level = Logger::WARN
+  #logger.level = Logger::WARN
   if session[:authenticated]
     begin
       @user = session[:user]      
       @bs = BookmarkStore.new(settings.conn_str)
       @bs.add_or_get_user(@user)
       @pinned = @bs.get_pinned_bookmarks
+      @fs = FeedStore.new(settings.conn_str)
     rescue
+      logger.info("Resetting session because of exception! To #{request.path_info}")
       reset_session
     end
-  else    
+  else 
+    logger.info("Resetting session because it is not authenticated! To #{request.path_info}")
     reset_session
   end  
-end
-
-get '/home/debug' do  
-  logger.fatal("Logging fatal event!!")
-  logger.error("Logging error!!")
-  logger.warn("Logging warning event!!")
-  logger.info("Logging info event!!")
-  logger.debug("Logging debug event!!")
-  @dvals = {}
-  if logger.fatal?
-    @dvals['log-level-fatal'] = 'fatal'
-  end
-  if logger.error?
-    @dvals['log-level-error'] = 'error'
-  end
-  if logger.warn?
-    @dvals['log-level-warn'] = 'warn'
-  end
-  if logger.info?
-    @dvals['log-level-info'] = 'info'
-  end
-  if logger.debug?
-    @dvals['log-level-debug'] = 'debug'
-  end
-  erb :'home/debug', :layout => :layout_home
 end
 
 get '/home/authdone' do
@@ -114,6 +95,11 @@ end
 get '/bookmarks/' do
   @bookmarks = @bs.get_bookmarks.paginate(:page => params[:page], :per_page => settings.links_per_page)  
   erb :'bookmarks/list'
+end
+
+get '/feeds/' do
+  @feeds = @fs.get_feeds.paginate(:page => params[:page], :per_page => settings.link_per_page)
+  erb :'feeds/list'
 end
 
 get '/bookmarks/new' do
@@ -166,7 +152,6 @@ get '/bookmarks/:id/edit' do
     redirect back
   end
 end
-
 
 get '/bookmarks/:id/pin' do
   bm = @bs.update_bookmark(Bookmark.new('id' => Integer(params[:id]), 'is_pinned' => true))

@@ -8,70 +8,18 @@
 		<thead>
 			<tr>
 				<th>Feed</th>
-				<th>Last Updated On</th>
+				<th>Added On</th>
 				<th>&nbsp;</th>
 			</tr>
 		</thead>
-		<tbody>	
+		<tbody>
+      <% @feeds.each do |feed| %>
 			<tr>
-				<td><a href="/feeds/1/items/">Feed Name One</a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/"><strong>*Feed Name Two</strong></a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/"><strong>*Feed Name Three</strong></a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/">Feed Name Four</a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/"><strong>*Feed Name Five</strong></a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/">Feed Name Six</a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/">Feed Name Seven</a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/">Feed Name Eight</a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/">Feed Name Nine</a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
-			<tr>
-				<td><a href="/feeds/1/items/">Feed Name Ten</a></td>
-				<td>12 Dec, 10:40 AM</td>
-				<td><a href="/feeds/1" class="muted">Details</a></td>
-			</tr>
+				<td><a href="/feeds/<%= feed.id %>/items/"><%= feed.title %></a></td>
+				<td><%= feed.added_on %></td>
+				<td><a href="/feeds/<%= feed.id %>" class="muted">Details</a></td>
+			</tr>			
 		</tbody>
 	</table>
-	<div class="pagination">
-		<ul>
-			<li><a href="#">&laquo;</a></li>
-			<li><a href="#">1</a></li>
-			<li><a href="#">2</a></li>
-			<li><a href="#">3</a></li>
-			<li><a href="#">&raquo;</a></li>          		
-		</ul>
-	</div>
+	<%= will_paginate @feeds, :renderer => BootstrapPagination::Sinatra %>
 </div>

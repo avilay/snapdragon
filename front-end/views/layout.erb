@@ -45,7 +45,9 @@
 					<% end %>
 					<table>	
 						<% @pinned.each do |pbm| %>
-							<tr><td><a href="<%= pbm.url %>"><%= pbm.name %></a></td></tr>							
+							<tr>								
+								<td><a href="<%= pbm.url %>"><%= pbm.name %></a></td>
+							</tr>							
 						<% end %>
 					</table>
 					<hr/>
