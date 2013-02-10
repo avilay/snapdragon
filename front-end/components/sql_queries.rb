@@ -15,14 +15,6 @@ module SqlQueries
     AND b.user_id = $1
     ORDER BY b.added_on DESC
   EOS
-  
-  GET_FDS = <<-EOS
-    SELECT f.id, l.url, l.title, f.description, f.web_url
-    FROM  feeds f, links l
-    WHERE f.link_id = l.id
-    AND f.user_id = $1
-    ORDER BY f.added_on DESC 
-  EOS
 
   CHK_BM = <<-EOS
     SELECT b.id, l.url, l.title, b.added_on, b.name, b.notes, b.is_pinned 
@@ -34,7 +26,7 @@ module SqlQueries
 
   CHK_LN = "SELECT id FROM links WHERE url = $1"
 
-  INS_LN = "INSERT INTO links (url, title, icon) VALUES ($1, $2, $3) RETURNING id"
+  INS_LN = "INSERT INTO links (url, title) VALUES ($1, $2) RETURNING id"
 
   INS_BM = <<-EOS
     INSERT INTO bookmarks (name, added_on, is_pinned, user_id, link_id)

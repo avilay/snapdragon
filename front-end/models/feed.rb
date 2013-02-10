@@ -1,36 +1,16 @@
 class Feed
-  attr_reader :id, :url, :title, :description, :web_url, :added_on
-  attr_accessor :errors
-  
-  def initialize(params = nil)
-    if params
-      @id = params['id']
-      @url = params['url']
-      @title = params['title']
-      @description = params['description']
-      @web_url = params['web_url']
-      @added_on = params['added_on']
-      self.errors = param['errors']
-    end
-    self.errors ||= []
-  end
-  
-  def Feed.build(fs)
-    feeds = []
-    fs.each { |f| feeds << Feed.new(f) }
-    feeds
-  end
-  
-  def ===(that)
-    if self.id == that.id &&
-      self.url == that.url &&
-      self.title == that.title &&
-      self.description == that.description &&
-      self.web_url == that.web_url &&
-      self.errors == that.errors
-      true
-    else
-      false
-    end
-  end 
+
+	attr_reader :id, :url, :title, :last_updated_on, :number_of_items, :number_of_unread_items
+	attr_accessor :name, :notes, :is_pinned, :errors
+
+	def initialize(params)
+		@id = params['link_id']
+	    @url = params['url']
+	    @title = params['title']
+	    @last_updated_on = params['last_updated_on']
+		@number_of_items = params['last_updated_on']	    
+	    @number_of_unread_items = params['number_of_unread_items']
+	    self.name = params['name']
+	    self.notes = params['notes']
+	end
 end
