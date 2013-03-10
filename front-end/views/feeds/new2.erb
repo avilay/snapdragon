@@ -1,0 +1,33 @@
+<h1>Edit Feed</h1>
+<form action="/feeds/1" method="post">
+	<fieldset>
+		<legend>Fill in the following details</legend>		
+		<div style="margin-bottom: 10px;">
+			<label><strong>Url</strong></label>
+			<a href="#">http://www.fabrikam/feeds</a>
+		</div>
+		<div style="margin-bottom: 10px;">
+			<label for="id_name"><strong>Name</strong></label>
+			<input id="id_name" name="name" type="text" value="Fabrikam Feed" />    		
+		</div>
+		<div style="margin-bottom: 10px;">
+			<label for="id_notes"><strong>Notes</strong></label>
+			<textarea id="id_notes" name="notes" rows="3">Fabrikam notes here.</textarea>
+		</div>  
+		<div style="margin-bottom: 10px;">
+			<label><strong>Last Updated On</strong></label>    
+			12 Dec, 10:40 AM
+		</div>
+		<div style="margin-bottom: 10px;">
+			<label><strong>Number Of Items</strong></label>
+			120
+		</div> 
+		<div style="margin-bottom: 10px;">
+			<label><strong>Number Of Unread Items</strong></label>
+			50
+		</div>              						
+	</fieldset>	
+  <div class="actions">
+  	<input type="submit", class="btn btn-primary" value="Save" />    
+  </div>
+</form>

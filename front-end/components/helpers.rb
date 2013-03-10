@@ -16,18 +16,3 @@ module URI
   end
 end
 
-module SdHelpers
-
-  def SdHelpers.title(url)
-    begin
-        uri = URI.parse(url)
-        title = Nokogiri::HTML(uri.open).title
-        title.strip!
-        title.gsub!(%r{\s+}, ' ')
-      rescue Exception
-        title = ''  
-      end
-      title
-  end
-
-end

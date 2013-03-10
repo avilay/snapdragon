@@ -17,7 +17,18 @@ class BookmarkStore < DataStore
       return Bookmark.new(bms.first)
     end
 
-    link = add_or_get_link(url)    
+    link = add_or_get_link(url) do |url|
+      begin
+        uri = URI.parse(url)
+        title = Nokogiri::HTML(uri.open).title
+        title.strip!
+        title.gsub!(%r{\s+}, ' ')
+      rescue Exception
+        title = ''  
+      end
+      title
+    end
+    
     bid = @conn.exec(INS_BM, [link['title'], Time.now, false, self.user_id, Integer(link['id'])]).first['id']    
     bm = Bookmark.new(@conn.exec(GET_BM, [bid, self.user_id]).first)
     bm
@@ -59,7 +70,7 @@ class BookmarkStore < DataStore
   # TODO: Write unit tests
   def get_pinned_bookmarks
     raise 'Cannot call this method without setting user id' unless self.user_id
-    Bookmark.build(@conn.exec(GET_PINNED, [self.user_id]))
+    Bookmark.build(@conn.exec(GET_PINNED_BMS, [self.user_id]))
   end
 
   # TODO: write unit tests

@@ -7,6 +7,7 @@ require 'oauth2_client'
 require 'user'
 require 'data_store'
 require 'bookmark_store'
+require 'feed_store'
 require 'will_paginate'
 require 'will_paginate/array'
 require 'will_paginate-bootstrap'
@@ -36,9 +37,9 @@ helpers do
     session[:notices] = nil
   end
 
-  def reset_session
+  def reset_session(call_next)
     session[:authenticated] = false
-    session[:after_auth_call] = request.path_info
+    session[:after_auth_call] = call_next
     redirect OAuth2Client.new(settings).login_url  
   end
 end
@@ -47,44 +48,23 @@ end
 # Only paths that do not start with home should have this filter apply
 before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do  
   set_flash
-  logger.level = Logger::WARN
   if session[:authenticated]
     begin
       @user = session[:user]      
       @bs = BookmarkStore.new(settings.conn_str)
+      @fs = FeedStore.new(settings.conn_str)
       @bs.add_or_get_user(@user)
-      @pinned = @bs.get_pinned_bookmarks
+      @fs.add_or_get_user(@user)
+      @pinned_bookmarks = @bs.get_pinned_bookmarks
+      @pinned_feeds = @fs.get_pinned_feeds
     rescue
-      reset_session
+      # TODO: Somehow log an error here
+      #reset_session("/")
+      raise
     end
   else    
-    reset_session
+    reset_session(request.path_info)
   end  
-end
-
-get '/home/debug' do  
-  logger.fatal("Logging fatal event!!")
-  logger.error("Logging error!!")
-  logger.warn("Logging warning event!!")
-  logger.info("Logging info event!!")
-  logger.debug("Logging debug event!!")
-  @dvals = {}
-  if logger.fatal?
-    @dvals['log-level-fatal'] = 'fatal'
-  end
-  if logger.error?
-    @dvals['log-level-error'] = 'error'
-  end
-  if logger.warn?
-    @dvals['log-level-warn'] = 'warn'
-  end
-  if logger.info?
-    @dvals['log-level-info'] = 'info'
-  end
-  if logger.debug?
-    @dvals['log-level-debug'] = 'debug'
-  end
-  erb :'home/debug', :layout => :layout_home
 end
 
 get '/home/authdone' do
@@ -116,10 +96,21 @@ get '/bookmarks/' do
   erb :'bookmarks/list'
 end
 
+get '/feeds/' do
+  @feeds = @fs.get_feeds.paginate(:page => params[:page], :per_page => settings.links_per_page)
+  erb :'feeds/list'
+end
+
 get '/bookmarks/new' do
   @heading = 'Bookmark New Page'
   @next = '/bookmarks/next'
-  erb :'new1'
+  erb :'new'
+end
+
+get '/feeds/new' do
+  @heading = 'Subscribe To Feed'
+  @next = '/feeds/next'
+  erb :'new'
 end
 
 get '/bookmarks/next' do  
@@ -129,12 +120,29 @@ get '/bookmarks/next' do
     @button_name = "Add"
     if params[:popup]
       session[:popup] = true
-      erb :'new2', :layout => :layout_popup
+      erb :'bookmarks/edit', :layout => :layout_popup
     else   
-      erb :'new2'
+      erb :'bookmarks/edit'
     end
   else
     (session[:errors] ||= []).push(*@bm.errors)
+    redirect back
+  end
+end
+
+get '/feeds/next' do  
+  @fd = @fs.add_or_get_feed(params[:url])
+  if @fd.errors.count == 0
+    @next = "/feeds/#{@fd.id}/edit"
+    @button_name = "Add"
+    if params[:popup]
+      session[:popup] = true
+      erb :'feeds/edit', :layout => :layout_popup
+    else   
+      erb :'feeds/edit'
+    end
+  else
+    (session[:errors] ||= []).push(*@fd.errors)
     redirect back
   end
 end
@@ -155,16 +163,45 @@ post '/bookmarks/:id/edit' do
   end
 end
 
+post '/feeds/:id/edit' do
+  feed = @fs.update_feed(Feed.new(params))
+  if feed.errors.count == 0
+    (session[:notices] ||= []) << 'Feed successfully added.'
+    if session[:popup]
+      session[:popup] = nil
+      erb :'end', :layout => :layout_popup
+    else
+      redirect to('/feeds/')
+    end
+  else
+    (session[:errors] ||= []).push(*feed.errors)
+    redirect back
+  end
+end
+
+
 get '/bookmarks/:id/edit' do
   @bm = @bs.get_bookmark(Integer(params[:id]))
   if @bm.errors.count == 0
     @next = "/bookmarks/#{@bm.id}/edit"
     @button_name = "Edit"
-    erb :'new2'  
+    erb :'bookmarks/edit'  
   else
     (session[:errors] ||= []).push(*@bm.errors)
     redirect back
   end
+end
+
+get '/feeds/:id/edit' do
+   @fd = @fs.get_feed(Integer(params[:id]))
+   if @fd.errors.count == 0
+     @next = "/feeds/#{@fd.id}/edit"
+     @button_name = "Edit"
+     erb :'feeds/edit'  
+   else
+     (session[:errors] ||= []).push(*@fd.errors)
+     redirect back
+   end
 end
 
 
@@ -173,7 +210,17 @@ get '/bookmarks/:id/pin' do
   if bm.errors.count == 0
     (session[:notices] ||= []) << 'Bookmark successfully pinned.'    
   else
-    (session[:errors] ||= []).push(*@bm.errors)    
+    (session[:errors] ||= []).push(*bm.errors)    
+  end
+  redirect back
+end
+
+get '/feeds/:id/pin' do
+  fd = @fs.update_feed(Feed.new('id' => Integer(params[:id]), 'is_pinned' => true))
+  if fd.errors.count == 0
+    (session[:notices] ||= []) << 'Feed successfully pinned.'    
+  else
+    (session[:errors] ||= []).push(*fd.errors)    
   end
   redirect back
 end
@@ -184,13 +231,25 @@ get '/bookmarks/:id/delete' do
   redirect to('/bookmarks/')
 end
 
-get '/bookmarks/unpin' do
+get '/feeds/:id/delete' do
+  @fs.delete_feed(params[:id])
+  (session[:notices] ||= []) << 'Feed unsubscribed.'    
+  redirect to('/feeds/')
+end
+
+get '/links/unpin' do
   erb :'unpin'
 end
 
-post '/bookmarks/unpin' do
+post '/links/unpin' do
   params.keys.each do |k|
-    @bs.update_bookmark(Bookmark.new('id' => Integer(k), 'is_pinned' => false))  
+    logger.info("Unpinning #{k}")
+    matches = %r{(bm|fd)_(\d+)}.match(k)
+    if matches[1] == 'bm'
+      @bs.update_bookmark(Bookmark.new('id' => Integer(matches[2]), 'is_pinned' => false))
+    elsif matches[1] == 'fd'
+      @fs.update_feed(Feed.new('id' => Integer(matches[2]), 'is_pinned' => false))      
+    end
   end
   redirect to('/bookmarks/')
 end
@@ -205,32 +264,24 @@ get '/bookmarks/:id' do
   end
 end
 
+get '/feeds/:id' do
+  @fd = @fs.get_feed(Integer(params[:id]))
+  if @fd.errors.count == 0
+    erb :'feeds/show'
+  else
+    (session[:errors] ||= []).push(*@fd.errors)
+    redirect to('/feeds/')
+  end
+end
+
 get '/debug' do
   params.keys.each do |k|
     logger.info("#{k} = #{params[k].inspect}")
   end
 end
 
-
-#######################
-
-get '/links/unpin' do
-  erb :'unpin'
-end
-
-get '/feeds/' do
-  erb :'feeds/list'
-end
-
-get '/feeds/:id' do
-  erb :'feeds/show'
-end
-
-get '/feeds/:id/edit' do
-  erb :'feeds/edit'
-end
-
 get '/feeds/:id/items/' do
+
   erb :'feeds/items'
 end
 

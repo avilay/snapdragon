@@ -24,3 +24,13 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 	user_id integer CONSTRAINT fk_bookmarks_users REFERENCES users,
 	link_id integer CONSTRAINT fk_bookmarks_links REFERENCES links
 );
+
+CREATE TABLE IF NOT EXISTS feeds (
+	id serial CONSTRAINT f_pri_key PRIMARY KEY,
+	description text,  	
+  	added_on timestamp,
+  	last_updated_on timestamp,
+  	is_pinned boolean,
+	user_id integer CONSTRAINT fk_feeds_users REFERENCES users,
+	link_id integer CONSTRAINT fk_feeds_links REFERENCES links
+);

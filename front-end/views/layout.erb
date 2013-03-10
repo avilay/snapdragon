@@ -39,17 +39,28 @@
 			</div><!--/span-->
 			<div class="span4">
 				<div class="well">
-					<h3>Pinned</h3>
-					<% if @pinned.count == 0 %>
+					<h3>Pinned</h3>					
+					<h4>Bookmarks</h4>
+					<% if @pinned_bookmarks.count == 0 %>
 						You have no pinned bookmarks.
 					<% end %>
 					<table>	
-						<% @pinned.each do |pbm| %>
+						<% @pinned_bookmarks.each do |pbm| %>
 							<tr><td><a href="<%= pbm.url %>"><%= pbm.name %></a></td></tr>							
+						<% end %>
+					</table>					
+					<hr/>
+					<h4>Feeds</h4>
+					<% if @pinned_feeds.count == 0 %>
+						You have no pinned feeds.
+					<% end %>
+					<table>	
+						<% @pinned_feeds.each do |pfd| %>
+							<tr><td><a href="<%= pfd.url %>"><%= pfd.title %></a></td></tr>							
 						<% end %>
 					</table>
 					<hr/>
-					<a href="/bookmarks/unpin" class="btn btn-inverse btn-small">Unpin Links</a>
+					<a href="/links/unpin" class="btn btn-mini">Unpin</a>					
 				</div>				
 			</div><!--/span-->
 		</div><!--/row-->

@@ -1,33 +1,21 @@
-<h1>Edit Feed</h1>
-<form action="/feeds/1" method="post">
+<h1>Add New Feed</h1>
+<form action="<%= @next %>" method="post">
 	<fieldset>
-		<legend>Fill in the following details</legend>		
+		<legend>Fill in the following details</legend>
 		<div style="margin-bottom: 10px;">
-			<label><strong>Url</strong></label>
-			<a href="#">http://www.fabrikam/feeds</a>
+			<label for="id_name"><strong>Url</strong></label>
+			<label><a href="<%= @fd.url %>"><%= @fd.url %></a>    		
 		</div>
 		<div style="margin-bottom: 10px;">
-			<label for="id_name"><strong>Name</strong></label>
-			<input id="id_name" name="name" type="text" value="Fabrikam Feed" />    		
+			<label for="id_title"><strong>Title</strong></label>
+			<label><%= @fd.title %></label>
 		</div>
 		<div style="margin-bottom: 10px;">
-			<label for="id_notes"><strong>Notes</strong></label>
-			<textarea id="id_notes" name="notes" rows="3">Fabrikam notes here.</textarea>
-		</div>  
-		<div style="margin-bottom: 10px;">
-			<label><strong>Last Updated On</strong></label>    
-			12 Dec, 10:40 AM
+			<label for="id_description"><strong>Description</strong></label>
+			<input id="id_description" name="description" type="text" value="<%= @fd.description %>" />    		
 		</div>
-		<div style="margin-bottom: 10px;">
-			<label><strong>Number Of Items</strong></label>
-			120
-		</div> 
-		<div style="margin-bottom: 10px;">
-			<label><strong>Number Of Unread Items</strong></label>
-			50
-		</div>              						
 	</fieldset>	
   <div class="actions">
-  	<input type="submit", class="btn btn-primary" value="Save" />    
+  	<input type="submit", class="btn btn-primary" value="<%= @button_name %>" />    
   </div>
 </form>

@@ -2,6 +2,7 @@ require 'pg'
 require 'uri'
 require 'bookmark'
 require 'user'
+require 'feed'
 require 'helpers'
 require 'sql_queries'
 
@@ -48,7 +49,7 @@ class DataStore
     if lns.count == 1
       link_id = lns.first["id"]
     else
-      link_id = @conn.exec(INS_LN, [url, SdHelpers.title(url)]).first['id']
+      link_id = @conn.exec(INS_LN, [url, yield(url)]).first['id']      
     end
     @conn.exec(GET_LN, [link_id]).first
   end
