@@ -21,7 +21,8 @@ configure do
   set :auth_done, "http://#{ENV['HOSTNAME']}/home/authdone"
   set :conn_str, ENV['DATABASE_URL']
   set :state, Digest::SHA2.hexdigest(rand.to_s)
-  set :links_per_page, 10    
+  set :links_per_page, 10 
+  #set :bind, '192.168.0.106'
 end
 
 helpers do
@@ -86,10 +87,15 @@ get '/' do
   redirect to('/home/')
 end
 
-get '/home/' do
+get %r{(home$)|(home/$)} do
   @login_url = OAuth2Client.new(settings).login_url
   erb :'home/index', :layout => :layout_home
 end
+
+# get '/home/' do
+#   @login_url = OAuth2Client.new(settings).login_url
+#   erb :'home/index', :layout => :layout_home
+# end
 
 get '/bookmarks/' do
   @bookmarks = @bs.get_bookmarks.paginate(:page => params[:page], :per_page => settings.links_per_page)  
