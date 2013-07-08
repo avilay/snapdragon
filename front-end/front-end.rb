@@ -22,7 +22,7 @@ configure do
   set :conn_str, ENV['DATABASE_URL']
   set :state, Digest::SHA2.hexdigest(rand.to_s)
   set :links_per_page, 10 
-  #set :bind, '192.168.0.106'
+  set :bind, '192.168.17.129'
 end
 
 helpers do
@@ -45,9 +45,10 @@ helpers do
   end
 end
 
-# All paths starting with home should be excluded from being authenticated
-# Only paths that do not start with home should have this filter apply
+# All paths starting with home, css, img, and js should be excluded from being authenticated
+# All other paths will have this filter apply
 before %r{^((?!/(home)|(css)|(img)|(js)/).)*$} do  
+  redirect to('/home') if request.path_info == "/"
   set_flash
   if session[:authenticated]
     begin
@@ -82,20 +83,10 @@ get '/home/authdone' do
   end
 end
 
-# TODO: Find a good regex for both '/home/' and '/'
-get '/' do
-  redirect to('/home/')
-end
-
 get %r{(home$)|(home/$)} do
   @login_url = OAuth2Client.new(settings).login_url
   erb :'home/index', :layout => :layout_home
 end
-
-# get '/home/' do
-#   @login_url = OAuth2Client.new(settings).login_url
-#   erb :'home/index', :layout => :layout_home
-# end
 
 get '/bookmarks/' do
   @bookmarks = @bs.get_bookmarks.paginate(:page => params[:page], :per_page => settings.links_per_page)  

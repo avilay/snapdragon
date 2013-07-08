@@ -1,3 +1,5 @@
+source ../../.env
+
 echo 'Deleting existing data in snapdragon db...'
 psql -d snapdragon -f $SD_HOME/front-end/scripts/delete.sql
 

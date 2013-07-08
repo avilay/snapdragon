@@ -12,33 +12,23 @@ class FeedStore < DataStore
       return Feed.new('errors' => ["#{url} is not a valid url."])
     end    
 
-    # Check if this url was already subscribed by the user    
+    # Check if this feed was already subscribed by the user    
     fds = @conn.exec(CHK_FD, [self.user_id, url])
     if fds.count == 1
       return Feed.new(fds.first)
     end
 
+    feed = Feedzirra::Feed.fetch_and_parse(url)
+    return Feed.new('errors' => ["#{url} is not a valid feed."]) unless feed
+
     link = add_or_get_link(url) do |url|
-      title = ''
-      feed = Feedzirra::Feed.fetch_and_parse(url)
-      if feed
-        title = feed.title
-      end
-      title
+      title = feed.title || ''      
     end
     
-    description = ''
-    feed = Feedzirra::Feed.fetch_and_parse(url)
-    if feed
-      description = feed.description
-    end
-    fid = @conn.exec(INS_FD, [description, Time.now, Time.now, false, self.user_id, Integer(link['id'])]).first['id']
-    #raise 'link is nil' unless link
-    #tp = @conn.exec(INS_FD, [description, Time.now, Time.now, false, self.user_id, Integer(link['id'])])
-    #raise 'tp is nil' unless tp
-    #fid = tp.first['id']
-    fd = Feed.new(@conn.exec(GET_FD, [fid, self.user_id]).first)
-    fd
+    description = feed.description || ''
+    
+    fid = @conn.exec(INS_FD, [description, Time.now, Time.now, false, self.user_id, Integer(link['id'])]).first['id']    
+    Feed.new(@conn.exec(GET_FD, [fid, self.user_id]).first)    
   end
 
   def get_feeds
