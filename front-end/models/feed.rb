@@ -1,11 +1,12 @@
 class Feed
-  attr_reader :id, :url, :title, :last_updated_on, :added_on
+  attr_reader :id, :url, :web_url, :title, :last_updated_on, :added_on
   attr_accessor :description, :errors  
   
   def initialize(params = nil)
     if params
       @id = params['id']
       @url = params['url']
+      @web_url = params['web_url']
       @title = params['title']
       @description = params['description']
       @last_updated_on = params['last_updated_on']

@@ -27,10 +27,27 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 
 CREATE TABLE IF NOT EXISTS feeds (
 	id serial CONSTRAINT f_pri_key PRIMARY KEY,
+	web_url varchar(1024),
 	description text,  	
   	added_on timestamp,
   	last_updated_on timestamp,
   	is_pinned boolean,
-	user_id integer CONSTRAINT fk_feeds_users REFERENCES users,
 	link_id integer CONSTRAINT fk_feeds_links REFERENCES links
+);
+
+CREATE TABLE IF NOT EXISTS users_feeds (
+	id serial CONSTRAINT uf_pri_key PRIMARY KEY,
+	feed_id integer CONSTRAINT fk_users_feeds_feeds REFERENCES feeds,
+	user_id integer CONSTRAINT fk_users_feeds_users REFERENCES users
+);
+
+CREATE TABLE IF NOT EXISTS items (
+	id serial CONSTRAINT i_pri_key PRIMARY KEY,
+	url varchar(1024),
+	title varchar(1024),
+	author varchar(1024),
+	content text,  	
+  	published timestamp,
+  	added_on timestamp,
+  	feed_id integer CONSTRAINT fk_items_feeds REFERENCES feeds
 );

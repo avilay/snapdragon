@@ -26,8 +26,9 @@ class FeedStore < DataStore
     end
     
     description = feed.description || ''
+    web_url = feed.url
     
-    fid = @conn.exec(INS_FD, [description, Time.now, Time.now, false, self.user_id, Integer(link['id'])]).first['id']    
+    fid = @conn.exec(INS_FD, [description, Time.now, Time.now, false, self.user_id, Integer(link['id']), web_url]).first['id']    
     Feed.new(@conn.exec(GET_FD, [fid, self.user_id]).first)    
   end
 

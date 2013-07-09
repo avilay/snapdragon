@@ -22,7 +22,7 @@ configure do
   set :conn_str, ENV['DATABASE_URL']
   set :state, Digest::SHA2.hexdigest(rand.to_s)
   set :links_per_page, 10 
-  set :bind, '192.168.17.129'
+  #set :bind, '192.168.174.129'
 end
 
 helpers do
@@ -44,6 +44,10 @@ helpers do
     redirect OAuth2Client.new(settings).login_url  
   end
 end
+
+
+
+
 
 # All paths starting with home, css, img, and js should be excluded from being authenticated
 # All other paths will have this filter apply
@@ -88,25 +92,41 @@ get %r{(home$)|(home/$)} do
   erb :'home/index', :layout => :layout_home
 end
 
+
+
+
+
+# ****** LINKS ACTIONS
+get '/links/unpin' do
+  erb :'unpin'
+end
+
+post '/links/unpin' do
+  params.keys.each do |k|
+    logger.info("Unpinning #{k}")
+    matches = %r{(bm|fd)_(\d+)}.match(k)
+    if matches[1] == 'bm'
+      @bs.update_bookmark(Bookmark.new('id' => Integer(matches[2]), 'is_pinned' => false))
+    elsif matches[1] == 'fd'
+      @fs.update_feed(Feed.new('id' => Integer(matches[2]), 'is_pinned' => false))      
+    end
+  end
+  redirect to('/bookmarks/')
+end
+
+
+
+
+
+#*********** BOOKMARKS ACTIONS
 get '/bookmarks/' do
   @bookmarks = @bs.get_bookmarks.paginate(:page => params[:page], :per_page => settings.links_per_page)  
   erb :'bookmarks/list'
 end
 
-get '/feeds/' do
-  @feeds = @fs.get_feeds.paginate(:page => params[:page], :per_page => settings.links_per_page)
-  erb :'feeds/list'
-end
-
 get '/bookmarks/new' do
   @heading = 'Bookmark New Page'
   @next = '/bookmarks/next'
-  erb :'new'
-end
-
-get '/feeds/new' do
-  @heading = 'Subscribe To Feed'
-  @next = '/feeds/next'
   erb :'new'
 end
 
@@ -127,23 +147,6 @@ get '/bookmarks/next' do
   end
 end
 
-get '/feeds/next' do  
-  @fd = @fs.add_or_get_feed(params[:url])
-  if @fd.errors.count == 0
-    @next = "/feeds/#{@fd.id}/edit"
-    @button_name = "Add"
-    if params[:popup]
-      session[:popup] = true
-      erb :'feeds/edit', :layout => :layout_popup
-    else   
-      erb :'feeds/edit'
-    end
-  else
-    (session[:errors] ||= []).push(*@fd.errors)
-    redirect back
-  end
-end
-
 post '/bookmarks/:id/edit' do
   bookmark = @bs.update_bookmark(Bookmark.new(params))
   if bookmark.errors.count == 0
@@ -160,23 +163,6 @@ post '/bookmarks/:id/edit' do
   end
 end
 
-post '/feeds/:id/edit' do
-  feed = @fs.update_feed(Feed.new(params))
-  if feed.errors.count == 0
-    (session[:notices] ||= []) << 'Feed successfully added.'
-    if session[:popup]
-      session[:popup] = nil
-      erb :'end', :layout => :layout_popup
-    else
-      redirect to('/feeds/')
-    end
-  else
-    (session[:errors] ||= []).push(*feed.errors)
-    redirect back
-  end
-end
-
-
 get '/bookmarks/:id/edit' do
   @bm = @bs.get_bookmark(Integer(params[:id]))
   if @bm.errors.count == 0
@@ -189,19 +175,6 @@ get '/bookmarks/:id/edit' do
   end
 end
 
-get '/feeds/:id/edit' do
-   @fd = @fs.get_feed(Integer(params[:id]))
-   if @fd.errors.count == 0
-     @next = "/feeds/#{@fd.id}/edit"
-     @button_name = "Edit"
-     erb :'feeds/edit'  
-   else
-     (session[:errors] ||= []).push(*@fd.errors)
-     redirect back
-   end
-end
-
-
 get '/bookmarks/:id/pin' do
   bm = @bs.update_bookmark(Bookmark.new('id' => Integer(params[:id]), 'is_pinned' => true))
   if bm.errors.count == 0
@@ -212,42 +185,9 @@ get '/bookmarks/:id/pin' do
   redirect back
 end
 
-get '/feeds/:id/pin' do
-  fd = @fs.update_feed(Feed.new('id' => Integer(params[:id]), 'is_pinned' => true))
-  if fd.errors.count == 0
-    (session[:notices] ||= []) << 'Feed successfully pinned.'    
-  else
-    (session[:errors] ||= []).push(*fd.errors)    
-  end
-  redirect back
-end
-
 get '/bookmarks/:id/delete' do
   @bs.delete_bookmark(params[:id])
   (session[:notices] ||= []) << 'Bookmark deleted.'    
-  redirect to('/bookmarks/')
-end
-
-get '/feeds/:id/delete' do
-  @fs.delete_feed(params[:id])
-  (session[:notices] ||= []) << 'Feed unsubscribed.'    
-  redirect to('/feeds/')
-end
-
-get '/links/unpin' do
-  erb :'unpin'
-end
-
-post '/links/unpin' do
-  params.keys.each do |k|
-    logger.info("Unpinning #{k}")
-    matches = %r{(bm|fd)_(\d+)}.match(k)
-    if matches[1] == 'bm'
-      @bs.update_bookmark(Bookmark.new('id' => Integer(matches[2]), 'is_pinned' => false))
-    elsif matches[1] == 'fd'
-      @fs.update_feed(Feed.new('id' => Integer(matches[2]), 'is_pinned' => false))      
-    end
-  end
   redirect to('/bookmarks/')
 end
 
@@ -259,6 +199,86 @@ get '/bookmarks/:id' do
     (session[:errors] ||= []).push(*@bm.errors)
     redirect to('/bookmarks/')
   end
+end
+
+
+
+
+
+#************FEEDS ACTIONS
+get '/feeds/' do
+  @feeds = @fs.get_feeds.paginate(:page => params[:page], :per_page => settings.links_per_page)
+  erb :'feeds/list'
+end
+
+get '/feeds/new' do
+  @heading = 'Subscribe To Feed'
+  @next = '/feeds/next'
+  erb :'new'
+end
+
+get '/feeds/next' do  
+  @fd = @fs.add_or_get_feed(params[:url])
+  if @fd.errors.count == 0
+    (session[:notices] ||= []) << 'Feed successfully added.'
+    #@next = "/feeds/#{@fd.id}/edit"
+    #@button_name = "Add"
+    if params[:popup]
+      session[:popup] = true
+      #erb :'feeds/edit', :layout => :layout_popup
+      erb :'end', :layout => :layout_popup
+    else   
+      #erb :'feeds/edit'
+      redirect to('/feeds/')
+    end
+  else
+    (session[:errors] ||= []).push(*@fd.errors)
+    redirect back
+  end
+end
+
+# post '/feeds/:id/edit' do
+#   feed = @fs.update_feed(Feed.new(params))
+#   if feed.errors.count == 0
+#     (session[:notices] ||= []) << 'Feed successfully added.'
+#     if session[:popup]
+#       session[:popup] = nil
+#       erb :'end', :layout => :layout_popup
+#     else
+#       redirect to('/feeds/')
+#     end
+#   else
+#     (session[:errors] ||= []).push(*feed.errors)
+#     redirect back
+#   end
+# end
+
+# get '/feeds/:id/edit' do
+#    @fd = @fs.get_feed(Integer(params[:id]))
+#    if @fd.errors.count == 0
+#      @next = "/feeds/#{@fd.id}/edit"
+#      @button_name = "Edit"
+#      erb :'feeds/edit'  
+#    else
+#      (session[:errors] ||= []).push(*@fd.errors)
+#      redirect back
+#    end
+# end
+
+get '/feeds/:id/pin' do
+  fd = @fs.update_feed(Feed.new('id' => Integer(params[:id]), 'is_pinned' => true))
+  if fd.errors.count == 0
+    (session[:notices] ||= []) << 'Feed successfully pinned.'    
+  else
+    (session[:errors] ||= []).push(*fd.errors)    
+  end
+  redirect back
+end
+
+get '/feeds/:id/delete' do
+  @fs.delete_feed(params[:id])
+  (session[:notices] ||= []) << 'Feed unsubscribed.'    
+  redirect to('/feeds/')
 end
 
 get '/feeds/:id' do

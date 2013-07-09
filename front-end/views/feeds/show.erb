@@ -2,8 +2,12 @@
 <fieldset>
 	<legend>Feed</legend>
 	<div style="margin-bottom: 10px;">
-		<label><strong>Url</strong></label>
+		<label><strong>Feed Url</strong></label>
 		<a href="<%= @fd.url %>"><%= @fd.url %></a>		
+	</div>
+	<div style="margin-bottom: 10px;">
+		<label><strong>Web Url</strong></label>
+		<a href="<%= @fd.web_url %>"><%= @fd.web_url %></a>		
 	</div>
 	<div style="margin-bottom: 10px;">
 		<label><strong>Title</strong></label>
@@ -34,6 +38,6 @@
 </fieldset>
 <p>
 	<a href="/feeds/<%= @fd.id %>/pin" class="btn btn-inverse">Pin</a>
-	<a href="/feeds/<%= @fd.id %>/edit" class="btn btn-warning">Edit</a>
+	<!-- <a href="/feeds/<%= @fd.id %>/edit" class="btn btn-warning">Edit</a> -->
 	<a href="/feeds/<%= @fd.id %>/delete" class="btn btn-danger">Unsubscribe</a>	
 </p>

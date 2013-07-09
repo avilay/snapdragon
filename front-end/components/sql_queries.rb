@@ -60,13 +60,13 @@ module SqlQueries
   DEL_BM = "DELETE FROM bookmarks WHERE user_id = $1 AND id = $2"
 
   INS_FD = <<-EOS
-    INSERT INTO feeds (description, last_updated_on, added_on, is_pinned, user_id, link_id)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO feeds (description, last_updated_on, added_on, is_pinned, user_id, link_id, web_url)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING id
   EOS
 
   CHK_FD = <<-EOS
-    SELECT f.id, l.url, l.title, f.description, f.last_updated_on, f.added_on
+    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
     FROM feeds f, links l
     WHERE f.user_id = $1
     AND f.link_id = l.id
@@ -74,7 +74,7 @@ module SqlQueries
   EOS
 
   GET_FDS = <<-EOS
-    SELECT f.id, l.url, l.title, f.description, f.last_updated_on, f.added_on
+    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
     FROM  feeds f, links l
     WHERE f.link_id = l.id
     AND f.user_id = $1
@@ -82,7 +82,7 @@ module SqlQueries
   EOS
 
   GET_FD = <<-EOS
-    SELECT f.id, l.url, l.title, f.description, f.last_updated_on, f.added_on
+    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
     FROM feeds f, links l
     WHERE f.link_id = l.id
     AND f.id = $1
@@ -90,7 +90,7 @@ module SqlQueries
   EOS
 
   GET_PINNED_FDS = <<-EOS
-    SELECT f.id, l.url, l.title, f.description, f.last_updated_on, f.added_on
+    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
     FROM feeds f, links l
     WHERE f.link_id = l.id
     AND f.is_pinned = TRUE
