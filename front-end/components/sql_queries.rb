@@ -59,48 +59,79 @@ module SqlQueries
     
   DEL_BM = "DELETE FROM bookmarks WHERE user_id = $1 AND id = $2"
 
+  CHK_USR_FD = "SELECT * FROM users_feeds WHERE user_id = $1 AND feed_id = $2"
+
+  CHK_FD = "SELECT * FROM feeds WHERE feed_url = $1"  
+
+  INS_USR_FD = <<-EOS
+    INSERT INTO users_feeds (user_id, feed_id, added_on, is_pinned)
+    VALUES ($1, $2, $3, $4)
+  EOS
+
   INS_FD = <<-EOS
-    INSERT INTO feeds (description, last_updated_on, added_on, is_pinned, user_id, link_id, web_url)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING id
+    INSERT INTO feeds (feed_url, web_url, title, description, last_updated_on)
+    VALUES ($1, $2, $3, $4, $5)
   EOS
 
-  CHK_FD = <<-EOS
-    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
-    FROM feeds f, links l
-    WHERE f.user_id = $1
-    AND f.link_id = l.id
-    AND l.url = $2
+  GET_FD_FOR_USR = <<-EOS
+    SELECT f.id, f.feed_url, f.web_url, f.title, f.description, f.last_updated_on, f.crawled_at, uf.added_on, uf.is_pinned
+    FROM feeds f, users_feeds uf
+    WHERE f.id = uf.feed_id
+    AND uf.user_id = $1
+    AND f.id = $2
   EOS
 
-  GET_FDS = <<-EOS
-    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
-    FROM  feeds f, links l
-    WHERE f.link_id = l.id
-    AND f.user_id = $1
-    ORDER BY f.added_on DESC 
-  EOS
-
-  GET_FD = <<-EOS
-    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
-    FROM feeds f, links l
-    WHERE f.link_id = l.id
-    AND f.id = $1
-    AND f.user_id = $2
-  EOS
-
-  GET_PINNED_FDS = <<-EOS
-    SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
-    FROM feeds f, links l
-    WHERE f.link_id = l.id
-    AND f.is_pinned = TRUE
-    AND f.user_id = $1
-  EOS
-
-  EDIT_FD = <<-EOS
-    UPDATE feeds SET description = $1, is_pinned = $2
-    WHERE id = $3
+  GET_FDS_FOR_USR = <<-EOS
+    SELECT f.id, f.feed_url, f.web_url, f.title, f.description, f.last_updated_on, f.crawled_at, uf.added_on, uf.is_pinned
+    FROM feeds f, users_feeds uf
+    WHERE f.id = uf.feed_id
+    AND uf.user_id = $1    
   EOS
 
   DEL_FD = "DELETE FROM feeds WHERE user_id = $1 AND id = $2"
+
+  # INS_FD = <<-EOS
+  #   INSERT INTO feeds (description, last_updated_on, added_on, is_pinned, user_id, link_id, web_url)
+  #   VALUES ($1, $2, $3, $4, $5, $6, $7)
+  #   RETURNING id
+  # EOS
+
+  # CHK_FD = <<-EOS
+  #   SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
+  #   FROM feeds f, links l
+  #   WHERE f.user_id = $1
+  #   AND f.link_id = l.id
+  #   AND l.url = $2
+  # EOS
+
+  # GET_FDS = <<-EOS
+  #   SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
+  #   FROM  feeds f, links l
+  #   WHERE f.link_id = l.id
+  #   AND f.user_id = $1
+  #   ORDER BY f.added_on DESC 
+  # EOS
+
+  # GET_FD = <<-EOS
+  #   SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
+  #   FROM feeds f, links l
+  #   WHERE f.link_id = l.id
+  #   AND f.id = $1
+  #   AND f.user_id = $2
+  # EOS
+
+  # GET_PINNED_FDS = <<-EOS
+  #   SELECT f.id, l.url, l.title, f.web_url, f.description, f.last_updated_on, f.added_on
+  #   FROM feeds f, links l
+  #   WHERE f.link_id = l.id
+  #   AND f.is_pinned = TRUE
+  #   AND f.user_id = $1
+  # EOS
+
+  # EDIT_FD = <<-EOS
+  #   UPDATE feeds SET description = $1, is_pinned = $2
+  #   WHERE id = $3
+  # EOS
+
+  
 end

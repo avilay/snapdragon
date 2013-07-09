@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS links (
 	id serial CONSTRAINT w_pri_key PRIMARY KEY,
 	url varchar(1024),
 	title varchar(1024),
-	crawled_at timestamp
+	crawled_at timestamp,
+	contents text
 );
 
 CREATE TABLE IF NOT EXISTS bookmarks (
@@ -27,18 +28,20 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 
 CREATE TABLE IF NOT EXISTS feeds (
 	id serial CONSTRAINT f_pri_key PRIMARY KEY,
+	feed_url varchar(1024),
 	web_url varchar(1024),
+	title varchar(1024),
 	description text,  	
-  	added_on timestamp,
-  	last_updated_on timestamp,
-  	is_pinned boolean,
-	link_id integer CONSTRAINT fk_feeds_links REFERENCES links
+  	crawled_at timestamp,
+  	last_updated_on timestamp
 );
 
 CREATE TABLE IF NOT EXISTS users_feeds (
 	id serial CONSTRAINT uf_pri_key PRIMARY KEY,
 	feed_id integer CONSTRAINT fk_users_feeds_feeds REFERENCES feeds,
-	user_id integer CONSTRAINT fk_users_feeds_users REFERENCES users
+	user_id integer CONSTRAINT fk_users_feeds_users REFERENCES users,
+	added_on timestamp,
+  	is_pinned boolean
 );
 
 CREATE TABLE IF NOT EXISTS items (

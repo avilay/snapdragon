@@ -1,14 +1,16 @@
 class Feed
-  attr_reader :id, :url, :web_url, :title, :last_updated_on, :added_on
-  attr_accessor :description, :errors  
+  attr_reader :id, :feed_url, :web_url, :title, :description
+  attr_reader :crawled_at, :last_updated_on, :added_on, :is_pinned
+  attr_accessor :errors  
   
   def initialize(params = nil)
     if params
       @id = params['id']
-      @url = params['url']
+      @feed_url = params['feed_url']
       @web_url = params['web_url']
       @title = params['title']
       @description = params['description']
+      @crawled_at = params['crawled_at']
       @last_updated_on = params['last_updated_on']
       @added_on = params['added_on']
       self.is_pinned = params['is_pinned']

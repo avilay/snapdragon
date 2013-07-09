@@ -1,0 +1,41 @@
+-------- REL V2.0
+Add tests cases for feed store.
+
+tests/dummy.rb looks like it is useless.
+
+In tests/set_path.rb need to fix the way connection string is populated directly from .env file.
+
+Verify end-to-end for feeds works.
+
+Implement functionality to pin/unpin and unsubscribe to feeds.
+
+Generate test_items.csv using feedzirra to populate items for a couple of feeds.
+
+Author add_test_items.rb.
+
+Add item test cases to feed store tests.
+
+Implement get '/feeds/:id/items/' in front-end.rb. This will include fixing views/feeds/items.erb. Will need to add users_items table with is_read, is_opened, is_clicked fields.
+
+Implement feed crawler.
+
+Implement db cleaner to clean old items and unsubscribed feeds.
+------- DEPLOY V2.0
+
+-------- REL V2.1
+Implement learner.
+
+Modify db cleaner to clean out old models.
+------- DEPLOY V2.1
+
+-------- REL V3.0
+Implement web crawler.
+
+Modify db cleaner to clean out old contents.
+
+Implement Lucene search for web contents.
+------- DEPLOY V3.0
+
+-------- REL V4.0
+Implement smart grouping
+------- DEPLOY V3.1
